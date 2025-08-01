@@ -474,7 +474,7 @@
             <h2>📌 SERVICIOS A LA CARTA</h2>
             <div class="addon-item">
                 <span>Diseño de landing adicional</span>
-                <span class="addon-price">$350</span>
+                <span class="addon-price">$450</span>
             </div>
             <div class="addon-item">
                 <span>Producción de video estilo TV/web</span>
@@ -510,12 +510,12 @@
             <div style="font-size: 1.2rem; margin-bottom: 20px;">
                 <strong>¿Listo para comenzar?</strong>
             </div>
-            <a href="https://wa.me/17871234567" class="cta-button" style="margin-right: 20px;">📞 Agenda una Llamada</a>
-            <a href="mailto:info@dealeramigo.com" class="cta-button">📧 Solicita Propuesta</a>
+            <a href="https://calendly.com/wilfredoquinones" class="cta-button" style="margin-right: 20px;">📞 Agenda una Llamada</a>
+            <a href="mailto:willquisnos@gmail.com" class="cta-button">📧 Solicita Propuesta</a>
         </div>
     </footer>
 
-    <a href="https://wa.me/17871234567" class="floating-whatsapp" title="Contactar por WhatsApp">
+    <a href="https://wa.me/17875301099" class="floating-whatsapp" title="Contactar por WhatsApp">
         📱
     </a>
 
@@ -547,5 +547,8 @@
             observer.observe(el);
         });
     </script>
+
+    <!-- Calendly widget script -->
+    <script src="https://assets.calendly.com/assets/external/widget.js" type="text/javascript" async></script>
 </body>
 </html>
