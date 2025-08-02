@@ -511,7 +511,7 @@
                 <strong>¿Listo para comenzar?</strong>
             </div>
             <a href="https://calendly.com/wilfredoquinones" class="cta-button" style="margin-right: 20px;">📞 Agenda una Llamada</a>
-            <a href="mailto:willquisnos@gmail.com" class="cta-button">📧 Solicita Propuesta</a>
+            <a href="https://docs.google.com/forms/d/1H5ElRfHZ2vWOj6lR02jG5Ijp57GG4pteHMHmbtU4epM/viewform" class="cta-button">📧 Solicita Propuesta</a>
         </div>
     </footer>
 
