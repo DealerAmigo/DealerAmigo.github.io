@@ -547,7 +547,16 @@
             observer.observe(el);
         });
     </script>
-
+<section class="cta">
+  <div class="container">
+    <h2 class="text-3xl font-bold text-center text-white mb-6">¿Listo para transformar tu dealer?</h2>
+    <p class="text-center text-white mb-6">Automatiza, produce y atrae... mientras tú te concentras en cerrar.</p>
+    <div class="flex justify-center space-x-4">
+      <a href="https://calendly.com/wilfredoquinones" class="bg-white text-violet-800 font-bold py-3 px-6 rounded-2xl shadow-lg hover:bg-violet-100 transition">Agendar llamada</a>
+      <a href="https://docs.google.com/forms/d/1H5ElRfHZ2vWOj6lR02jG5Ijp57GG4pteHMHmbtU4epM/viewform" class="bg-violet-600 text-white font-bold py-3 px-6 rounded-2xl shadow-lg hover:bg-violet-700 transition">Solicita tu demo aquí</a>
+    </div>
+  </div>
+</section>
     <!-- Calendly widget script -->
     <script src="https://assets.calendly.com/assets/external/widget.js" type="text/javascript" async></script>
 </body>
