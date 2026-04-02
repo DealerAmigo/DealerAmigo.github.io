@@ -404,17 +404,23 @@ let leadCaptured = false;
 async function callClaude(messages) {
   const res = await fetch(PROXY_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'text/plain' },  // ← esto evita el preflight
     body: JSON.stringify({
-      model:    'claude-haiku-4-5-20251001',
+      model:      'claude-haiku-4-5-20251001',
       max_tokens: 400,
-      system:   SYSTEM_PROMPT,
-      messages: messages,
-      _token:   PROXY_TOKEN,
-      _session: SESSION_ID,
-      _cliente: 'Auto Éxito Import'
+      system:     SYSTEM_PROMPT,
+      messages:   messages,
+      _token:     PROXY_TOKEN,
+      _session:   SESSION_ID,
+      _cliente:   'Auto Éxito Import'
     })
   });
+
+  if (!res.ok) throw new Error('Proxy ' + res.status);
+  const data = await res.json();
+  if (data.error) throw new Error(data.error);
+  return data.content[0].text;
+}
 
   if (!res.ok) throw new Error('Proxy ' + res.status);
   const data = await res.json();
