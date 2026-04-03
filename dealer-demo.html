@@ -81,75 +81,12 @@ header::after { content: ''; position: absolute; bottom: -6px; left: 0; right: 0
   <div class="powered">Powered by SecretarIA · autoexitopr.com</div>
 </div>
 <script>
+// ── CONFIG ──
 const PROXY_URL   = 'https://script.google.com/macros/s/AKfycbxkd_k2gP3c011NfSyaYFv5XVsh6TLD0KIBUerKX4kTfxG1ewW5cd3H6r_x_TYU1XZx/exec';
 const PROXY_TOKEN = 'secretaria-pr-2026-k8mXpQ';
 const SESSION_ID  = Math.random().toString(36).substring(2, 12);
 
-const SYSTEM_PROMPT = `Eres Éxito, el asistente virtual de Auto Éxito Import — dealer de autos usados en Vega Alta, Puerto Rico.
-
-No eres un chatbot genérico. Eres el mejor vendedor del dealer: directo, humano, que entiende al cliente antes de hablar de carros. Tu trabajo es conseguir el nombre y número del cliente para que el equipo lo llame hoy — y si el cliente necesita el carro ya, cerrar con entrega el mismo día.
-
-## PERFILES DE CLIENTE
-- Primera compra: joven que nunca ha comprado, le da miedo que lo engañen
-- Familia: busca espacio y seguridad, algo confiable para los nenes
-- Presupuesto ajustado: quiere el máximo por su dinero, compara precios
-- Crédito dañado: ha sido rechazado en otros dealers, frustrado, necesita que le digan que sí
-- Urgente: necesita el carro ya, esta semana, situación concreta
-
-## LA VENTAJA DE AUTO ÉXITO
-1. Precio justo — sin regateo, sin letra pequeña
-2. Proceso fácil — Oriental, Popular, FirstBank, cooperativas, PenFed
-3. Entrega a domicilio GRATIS — toda la isla, mismo día si los números cuadran hoy
-
-## INVENTARIO ACTUAL
-- Ford Bronco Big Bend 2022 — SUV 4x4, off-road, garantía de fábrica
-- Jeep Wrangler 2023 — 4x4, capota desmontable, garantía
-- Toyota Tacoma TRD Sport 2024 — pickup sport, bajo millaje, garantía Toyota
-- Toyota Corolla 2025 — sedán, bajo millaje, garantía, excelente en gasolina
-- Nissan Kicks SV 2023 — SUV compacta, económica, bajo millaje
-- Mitsubishi Outlander 2023 — SUV 7 pasajeros, espaciosa, garantía
-- Nissan Versa 2024 — sedán económico, perfecta para ciudad
-Para precios exactos, millaje, colores: el cliente da su número y el equipo llama en 5 minutos.
-
-## FLUJO DE 4 MENSAJES
-
-MENSAJE 1 — CONECTAR
-Preséntate en una oración. UNA sola pregunta que identifique el perfil.
-
-MENSAJE 2 — CALIFICAR
-Conecta con su realidad. Menciona 1 vehículo. Termina: "¿Eso se acerca a lo que buscas?"
-
-MENSAJE 3 — URGENCIA + DELIVERY
-Pregunta: "¿Cuándo necesitas el carro — esta semana o todavía estás comparando?"
-Si dice YA/hoy → "Si los números cuadran hoy, te lo entregamos esta misma tarde — gratis. ¿Te montamos?"
-Si no urgente → "Los carros con garantía activa se van rápido — ese [vehículo] lo están mirando esta semana."
-Termina: "¿Quieres que te llamemos hoy para darte los números exactos?"
-
-MENSAJE 4 — CERRAR
-"Dame tu nombre y número y te llama alguien del equipo hoy mismo."
-Cuando tengas nombre + número → incluye exacto al final:
-CITA_CONFIRMADA:[nombre]|[telefono]|[cuando necesita]|[vehiculo de interes]
-
-## OBJECIONES
-"Está caro" → "El precio incluye todo. ¿Cuánto tienes pensado invertir?"
-"Estoy comparando" → "¿Qué otros dealers miras? A veces puedo ahorrarte el viaje."
-"Mi crédito está malo" → "No te descartamos. Dame tu número y el equipo te dice si calificas."
-"No tengo enganche" → "Hay opciones sin enganche. ¿Te llamamos?"
-"Lo voy a pensar" → "¿Qué es lo que todavía no está claro?"
-"Mándame info" → "La info cambia según tu situación. Dame tu número y te llaman hoy."
-
-## REGLAS
-1. Máximo 3 oraciones por mensaje
-2. UNA sola pregunta por mensaje
-3. NUNCA inventes precio, millaje, color ni disponibilidad
-4. NUNCA digas IA, Claude, Anthropic, bot ni sistema
-5. Si preguntan si eres humano: "Soy el asistente virtual — el equipo que te llama sí es humano"
-6. Problema técnico: "Llámanos al (787) 331-0450"
-7. NUNCA uses CITA_CONFIRMADA sin nombre Y número real
-
-## TONO
-Español natural de Puerto Rico. Directo pero cálido. Energía alta cuando hay urgencia.`;
-
+// SIN SYSTEM PROMPT — el Apps Script lo construye con inventario real de Google Sheets
 let history = [];
 let leadCaptured = false;
 
@@ -158,13 +95,13 @@ async function callClaude(messages) {
     method: 'POST',
     headers: { 'Content-Type': 'text/plain' },
     body: JSON.stringify({
-      model: 'claude-haiku-4-5-20251001',
+      model:     'claude-haiku-4-5-20251001',
       max_tokens: 400,
-      system: SYSTEM_PROMPT,
-      messages: messages,
-      _token: PROXY_TOKEN,
-      _session: SESSION_ID,
-      _cliente: 'Auto Éxito Import'
+      messages:  messages,
+      _token:    PROXY_TOKEN,
+      _session:  SESSION_ID,
+      _cliente:  'Auto Éxito Import'
+      // NO system — el proxy lee la Sheet y construye el prompt dinámico
     })
   });
   if (!res.ok) throw new Error('Proxy ' + res.status);
@@ -210,17 +147,16 @@ function showTyping() {
 
 function removeTyping() { const t = document.getElementById('typing'); if (t) t.remove(); }
 
-function showLeadCard(nombre, telefono, cuando, vehiculo) {
+function showLeadCard(nombre, telefono, presupuesto, vehiculo) {
   const wrap = document.getElementById('messages');
   const card = document.createElement('div');
   card.className = 'lead-card';
-  const esHoy = cuando && (cuando.toLowerCase().includes('hoy') || cuando.toLowerCase().includes('mismo'));
   card.innerHTML = `
     <strong>✅ Lead capturado — equipo notificado</strong>
     👤 ${nombre} &nbsp;|&nbsp; 📞 ${telefono}<br>
     🚗 ${vehiculo || 'Por definir'}<br>
-    🕐 ${cuando || 'Esta semana'}
-    ${esHoy ? '<br><span class="delivery-badge">🚚 ENTREGA HOY</span>' : ''}
+    💰 ${presupuesto || 'A consultar'}
+    <br><span class="delivery-badge">📧 Equipo notificado</span>
   `;
   wrap.appendChild(card); scrollBottom();
 }
@@ -228,11 +164,16 @@ function showLeadCard(nombre, telefono, cuando, vehiculo) {
 function getQuickReplies(reply, turn) {
   const r = reply.toLowerCase();
   if (turn <= 1) return ['Es para mí solo', 'Es para la familia', 'Tengo crédito difícil', 'Lo necesito ya'];
-  if (r.includes('cuándo') || r.includes('cuando') || r.includes('semana')) return ['Lo necesito hoy mismo', 'Esta semana', 'Estoy comparando todavía'];
-  if (r.includes('entregamos') || r.includes('entrega') || r.includes('montamos')) return ['Sí, me interesa hoy', 'Prefiero que me llamen', 'Tengo más preguntas'];
-  if (r.includes('nombre') || r.includes('número') || r.includes('llamar')) return ['Sí, llámenme hoy', 'Prefiero WhatsApp'];
-  if (r.includes('crédito') || r.includes('financi')) return ['Necesito financiamiento', 'Pago en efectivo', 'Quiero saber si califico'];
-  if (r.includes('acerca') || r.includes('buscas') || r.includes('interesa')) return ['Sí, cuéntame más', 'Busco algo diferente', '¿Tienen más opciones?'];
+  if (r.includes('pago') || r.includes('mensual') || r.includes('presupuesto'))
+    return ['Menos de $400/mes', 'Entre $400-$600/mes', 'Más de $600/mes'];
+  if (r.includes('montas') || r.includes('cuadran') || r.includes('cómodo'))
+    return ['Sí, me monto', 'Necesito pensarlo', 'Dame más info'];
+  if (r.includes('nombre') || r.includes('número') || r.includes('llamar'))
+    return ['Sí, llámenme hoy', 'Prefiero WhatsApp'];
+  if (r.includes('crédito') || r.includes('financi'))
+    return ['Necesito financiamiento', 'Pago en efectivo', '¿Califico con mal crédito?'];
+  if (r.includes('familia') || r.includes('solo') || r.includes('buscas'))
+    return ['Para mí solo', 'Para la familia', 'Lo necesito ya'];
   return [];
 }
 
@@ -251,8 +192,8 @@ async function sendMessage() {
     if (citaMatch && !leadCaptured) {
       leadCaptured = true;
       reply = reply.replace(/CITA_CONFIRMADA:.+/, '').trim();
-      const [, nombre, telefono, cuando, vehiculo] = citaMatch;
-      showLeadCard(nombre.trim(), telefono.trim(), cuando.trim(), vehiculo.trim());
+      const [, nombre, telefono, presupuesto, vehiculo] = citaMatch;
+      showLeadCard(nombre.trim(), telefono.trim(), presupuesto.trim(), vehiculo.trim());
     }
     removeTyping();
     history.push({ role: 'assistant', content: reply });
@@ -274,7 +215,7 @@ window.onload = async () => {
   showTyping();
   await new Promise(r => setTimeout(r, 1100));
   removeTyping();
-  const greeting = `¡Bienvenido a Auto Éxito Import! 🚗 Soy Éxito, tu asistente.\nEntregamos gratis a toda la isla — incluso el mismo día si los números cuadran hoy.\n\n¿Para qué necesitas el carro?`;
+  const greeting = `¡Bienvenido a Auto Éxito Import! 🚗 Soy Éxito, tu asesor.\nEntregamos gratis a toda la isla — incluso el mismo día si los números cuadran hoy.\n\n¿Estás buscando para ti solo o para la familia?`;
   history.push({ role: 'assistant', content: greeting });
   addMessage('bot', greeting, ['Es para mí solo', 'Es para la familia', 'Tengo crédito difícil', 'Lo necesito ya']);
 };
