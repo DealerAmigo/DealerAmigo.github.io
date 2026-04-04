@@ -44,16 +44,52 @@ header::after { content: ''; position: absolute; bottom: -6px; left: 0; right: 0
 .qr-wrap { display: flex; flex-wrap: wrap; gap: 7px; padding: 4px 0 8px 39px; animation: fadeUp .28s ease; }
 .qr-btn { background: transparent; border: 1px solid var(--border-light); color: var(--text); padding: 7px 14px; border-radius: 100px; font-size: 13px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .18s; }
 .qr-btn:hover { border-color: var(--red); color: var(--red); background: rgba(200,16,46,.06); }
+
+/* ── VEHICLE CARD ── */
+.vehicle-card {
+  margin: 2px 0 6px 39px;
+  background: var(--card);
+  border: 1px solid var(--border-light);
+  border-left: 3px solid var(--red);
+  border-radius: 12px;
+  overflow: hidden;
+  animation: fadeUp .3s ease;
+  max-width: 73%;
+}
+.vehicle-card img {
+  width: 100%; height: 160px;
+  object-fit: cover; display: block;
+  background: var(--border);
+}
+.vehicle-card .vc-body { padding: 12px 14px; }
+.vehicle-card .vc-label { font-size: 10px; text-transform: uppercase; letter-spacing: .8px; color: var(--red); font-weight: 600; margin-bottom: 4px; }
+.vehicle-card .vc-name { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 1px; color: var(--text); line-height: 1.1; margin-bottom: 3px; }
+.vehicle-card .vc-details { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+.vehicle-card .vc-price { font-size: 20px; font-weight: 700; color: var(--accent); margin-bottom: 12px; }
+.vehicle-card .vc-btn {
+  display: block; width: 100%;
+  background: var(--red); color: white;
+  border: none; border-radius: 8px;
+  padding: 10px; font-size: 13px; font-weight: 600;
+  cursor: pointer; text-align: center;
+  font-family: 'DM Sans', sans-serif;
+  transition: background .15s;
+  text-decoration: none;
+}
+.vehicle-card .vc-btn:hover { background: #a50d26; }
+
+/* ── LEAD CARD ── */
 .lead-card { background: rgba(76,175,80,.08); border: 1px solid rgba(76,175,80,.3); border-radius: 10px; padding: 13px 16px; font-size: 13px; color: var(--text); animation: fadeUp .3s ease; margin: 2px 0 6px 39px; line-height: 1.8; }
 .lead-card strong { display: block; margin-bottom: 5px; color: var(--green); font-size: 12px; letter-spacing: .5px; text-transform: uppercase; }
-.delivery-badge { display: inline-block; background: var(--accent); color: #000; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 100px; margin-top: 4px; }
+.badge { display: inline-block; background: var(--accent); color: #000; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 100px; margin-top: 4px; }
+
 .input-bar { background: var(--mid); border-top: 1px solid var(--border); padding: 12px 16px; flex-shrink: 0; }
 .input-inner { max-width: 720px; margin: 0 auto; display: flex; gap: 9px; align-items: center; }
 .input-inner input { flex: 1; background: var(--card); border: 1px solid var(--border); border-radius: 100px; padding: 11px 18px; color: var(--text); font-size: 14px; font-family: 'DM Sans', sans-serif; outline: none; transition: border-color .2s; }
 .input-inner input:focus { border-color: var(--red); }
 .input-inner input::placeholder { color: #444; }
-.send-btn { width: 42px; height: 42px; background: var(--red); border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform .15s, background .2s; flex-shrink: 0; }
-.send-btn:hover { transform: scale(1.07); background: #a50d26; }
+.send-btn { width: 42px; height: 42px; background: var(--red); border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform .15s; flex-shrink: 0; }
+.send-btn:hover { transform: scale(1.07); }
 .send-btn:disabled { background: var(--border); cursor: not-allowed; transform: none; }
 .send-btn svg { width: 17px; height: 17px; fill: white; }
 .powered { text-align: center; font-size: 10px; color: #2a2a2a; margin-top: 7px; letter-spacing: .5px; }
@@ -81,12 +117,10 @@ header::after { content: ''; position: absolute; bottom: -6px; left: 0; right: 0
   <div class="powered">Powered by SecretarIA · autoexitopr.com</div>
 </div>
 <script>
-// ── CONFIG ──
 const PROXY_URL   = 'https://script.google.com/macros/s/AKfycbxkd_k2gP3c011NfSyaYFv5XVsh6TLD0KIBUerKX4kTfxG1ewW5cd3H6r_x_TYU1XZx/exec';
 const PROXY_TOKEN = 'secretaria-pr-2026-k8mXpQ';
 const SESSION_ID  = Math.random().toString(36).substring(2, 12);
 
-// SIN SYSTEM PROMPT — el Apps Script lo construye con inventario real de Google Sheets
 let history = [];
 let leadCaptured = false;
 
@@ -95,19 +129,18 @@ async function callClaude(messages) {
     method: 'POST',
     headers: { 'Content-Type': 'text/plain' },
     body: JSON.stringify({
-      model:     'claude-haiku-4-5-20251001',
-      max_tokens: 400,
-      messages:  messages,
-      _token:    PROXY_TOKEN,
-      _session:  SESSION_ID,
-      _cliente:  'Auto Éxito Import'
-      // NO system — el proxy lee la Sheet y construye el prompt dinámico
+      model:      'claude-haiku-4-5-20251001',
+      max_tokens: 450,
+      messages:   messages,
+      _token:     PROXY_TOKEN,
+      _session:   SESSION_ID,
+      _cliente:   'Auto Éxito Import'
     })
   });
   if (!res.ok) throw new Error('Proxy ' + res.status);
   const data = await res.json();
   if (data.error) throw new Error(data.error);
-  return data.content[0].text;
+  return data;
 }
 
 function scrollBottom() { const m = document.getElementById('messages'); m.scrollTop = m.scrollHeight; }
@@ -137,15 +170,24 @@ function addMessage(role, html, qr = []) {
   scrollBottom();
 }
 
-function showTyping() {
+function showVehicleCard(card) {
+  if (!card) return;
   const wrap = document.getElementById('messages');
-  const t = document.createElement('div');
-  t.className = 'bubble bot'; t.id = 'typing';
-  t.innerHTML = `<div class="av bot">AE</div><div class="msg"><div class="typing-dots"><span></span><span></span><span></span></div></div>`;
-  wrap.appendChild(t); scrollBottom();
+  const div = document.createElement('div');
+  div.className = 'vehicle-card';
+  div.innerHTML = `
+    ${card.foto ? `<img src="${card.foto}" alt="${card.nombre}" onerror="this.style.display='none'">` : ''}
+    <div class="vc-body">
+      <div class="vc-label">🚗 Disponible hoy</div>
+      <div class="vc-name">${card.nombre}</div>
+      <div class="vc-details">${card.color}${card.condicion ? ' · ' + card.condicion : ''}</div>
+      <div class="vc-price">${card.precio} <span style="font-size:12px;color:var(--muted);font-weight:400">Sin IVU</span></div>
+      <a href="${card.link}" target="_blank" class="vc-btn">Ver en el dealer →</a>
+    </div>
+  `;
+  wrap.appendChild(div);
+  scrollBottom();
 }
-
-function removeTyping() { const t = document.getElementById('typing'); if (t) t.remove(); }
 
 function showLeadCard(nombre, telefono, presupuesto, vehiculo) {
   const wrap = document.getElementById('messages');
@@ -156,24 +198,27 @@ function showLeadCard(nombre, telefono, presupuesto, vehiculo) {
     👤 ${nombre} &nbsp;|&nbsp; 📞 ${telefono}<br>
     🚗 ${vehiculo || 'Por definir'}<br>
     💰 ${presupuesto || 'A consultar'}
-    <br><span class="delivery-badge">📧 Equipo notificado</span>
+    <br><span class="badge">📧 Wilnelis notificada</span>
   `;
   wrap.appendChild(card); scrollBottom();
 }
 
+function showTyping() {
+  const wrap = document.getElementById('messages');
+  const t = document.createElement('div');
+  t.className = 'bubble bot'; t.id = 'typing';
+  t.innerHTML = `<div class="av bot">AE</div><div class="msg"><div class="typing-dots"><span></span><span></span><span></span></div></div>`;
+  wrap.appendChild(t); scrollBottom();
+}
+function removeTyping() { const t = document.getElementById('typing'); if (t) t.remove(); }
+
 function getQuickReplies(reply, turn) {
   const r = reply.toLowerCase();
   if (turn <= 1) return ['Es para mí solo', 'Es para la familia', 'Tengo crédito difícil', 'Lo necesito ya'];
-  if (r.includes('pago') || r.includes('mensual') || r.includes('presupuesto'))
-    return ['Menos de $400/mes', 'Entre $400-$600/mes', 'Más de $600/mes'];
-  if (r.includes('montas') || r.includes('cuadran') || r.includes('cómodo'))
-    return ['Sí, me monto', 'Necesito pensarlo', 'Dame más info'];
-  if (r.includes('nombre') || r.includes('número') || r.includes('llamar'))
-    return ['Sí, llámenme hoy', 'Prefiero WhatsApp'];
-  if (r.includes('crédito') || r.includes('financi'))
-    return ['Necesito financiamiento', 'Pago en efectivo', '¿Califico con mal crédito?'];
-  if (r.includes('familia') || r.includes('solo') || r.includes('buscas'))
-    return ['Para mí solo', 'Para la familia', 'Lo necesito ya'];
+  if (r.includes('pago') || r.includes('mensual')) return ['Menos de $400/mes', 'Entre $400-$600/mes', 'Más de $600/mes'];
+  if (r.includes('montas') || r.includes('cuadran')) return ['Sí, me monto', 'Necesito pensarlo', 'Dame más info'];
+  if (r.includes('nombre') || r.includes('número') || r.includes('llamar')) return ['Sí, llámenme hoy', 'Prefiero WhatsApp'];
+  if (r.includes('crédito') || r.includes('financi')) return ['Necesito financiamiento', 'Pago en efectivo', '¿Califico?'];
   return [];
 }
 
@@ -187,17 +232,28 @@ async function sendMessage() {
   history.push({ role: 'user', content: text });
   showTyping();
   try {
-    let reply = await callClaude(history);
-    const citaMatch = reply.match(/CITA_CONFIRMADA:([^|]+)\|([^|]+)\|([^|]+)\|(.+)/);
-    if (citaMatch && !leadCaptured) {
+    const data = await callClaude(history);
+    let reply  = data.content[0].text;
+    const card = data._card || null;
+
+    // Detectar lead
+    const leadMatch = reply.match(/CITA_CONFIRMADA:([^|]+)\|([^|]+)\|([^|]+)\|(.+)/);
+    if (leadMatch && !leadCaptured) {
       leadCaptured = true;
       reply = reply.replace(/CITA_CONFIRMADA:.+/, '').trim();
-      const [, nombre, telefono, presupuesto, vehiculo] = citaMatch;
-      showLeadCard(nombre.trim(), telefono.trim(), presupuesto.trim(), vehiculo.trim());
+      showLeadCard(leadMatch[1].trim(), leadMatch[2].trim(), leadMatch[3].trim(), leadMatch[4].trim());
     }
+
+    // Limpiar tags internos del texto
+    reply = reply.replace(/VEHICULO_CARD:\w+/g, '').trim();
+
     removeTyping();
     history.push({ role: 'assistant', content: reply });
     addMessage('bot', reply, getQuickReplies(reply, history.length));
+
+    // Mostrar tarjeta del vehículo
+    if (card) showVehicleCard(card);
+
   } catch (err) {
     removeTyping();
     addMessage('bot', 'Tuve un problema de conexión. Llámanos al (787) 331-0450 📞');
