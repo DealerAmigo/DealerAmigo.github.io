@@ -46,6 +46,8 @@ header::after { content: ''; position: absolute; bottom: -6px; left: 0; right: 0
 .qr-btn:hover { border-color: var(--red); color: var(--red); background: rgba(200,16,46,.06); }
 .lead-card { background: rgba(76,175,80,.08); border: 1px solid rgba(76,175,80,.3); border-radius: 10px; padding: 13px 16px; font-size: 13px; color: var(--text); animation: fadeUp .3s ease; margin: 2px 0 6px 39px; line-height: 1.8; }
 .lead-card strong { display: block; margin-bottom: 5px; color: var(--green); font-size: 12px; letter-spacing: .5px; text-transform: uppercase; }
+.lead-card.nq { background: rgba(255,165,0,.08); border-color: rgba(255,165,0,.3); }
+.lead-card.nq strong { color: #ffa500; }
 .badge { display: inline-block; background: var(--accent); color: #000; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 100px; margin-top: 4px; }
 .input-bar { background: var(--mid); border-top: 1px solid var(--border); padding: 12px 16px; flex-shrink: 0; }
 .input-inner { max-width: 720px; margin: 0 auto; display: flex; gap: 9px; align-items: center; }
@@ -81,7 +83,7 @@ header::after { content: ''; position: absolute; bottom: -6px; left: 0; right: 0
   <div class="powered">Powered by SecretarIA · autoexitopr.com</div>
 </div>
 <script>
-const PROXY_URL   = 'https://script.google.com/macros/s/AKfycbznx_jp-_ZA7ACujPRd2BawnIqlGKxvKEYj1KqsJIm0lUoo4zYcqfPa2sgpWKsN4k12/exec';
+const PROXY_URL   = 'PROXY_URL_AQUI';
 const PROXY_TOKEN = 'secretaria-pr-2026-k8mXpQ';
 const SESSION_ID  = Math.random().toString(36).substring(2, 12);
 
@@ -146,27 +148,39 @@ function removeTyping() { const t = document.getElementById('typing'); if (t) t.
 function showLeadCard(nombre, telefono, presupuesto, vehiculo, notas) {
   const wrap = document.getElementById('messages');
   const card = document.createElement('div');
-  card.className = 'lead-card';
+  const esNQ = notas && notas.toLowerCase().includes('no cualificado');
+  card.className = 'lead-card' + (esNQ ? ' nq' : '');
   card.innerHTML = `
-    <strong>✅ Lead calificado — equipo notificado</strong>
+    <strong>${esNQ ? '📋 Contacto guardado' : '✅ Lead calificado — equipo notificado'}</strong>
     👤 ${nombre} &nbsp;|&nbsp; 📞 ${telefono}<br>
     🚗 ${vehiculo || 'Por definir'}<br>
     💰 ${presupuesto || 'A consultar'}<br>
     📋 ${notas || ''}
-    <br><span class="badge">📧 Wilnelis notificada</span>
+    <br><span class="badge">${esNQ ? '📅 Seguimiento futuro' : '📧 Wilnelis notificada'}</span>
   `;
   wrap.appendChild(card); scrollBottom();
 }
 
 function getQuickReplies(reply, turn) {
   const r = reply.toLowerCase();
-  if (r.includes('gusto') || r.includes('nombre')) return [];
-  if (turn <= 2) return ['Es para mí solo', 'Es para la familia', 'Tengo crédito difícil', 'Lo necesito ya'];
-  if (r.includes('pago') || r.includes('mensual')) return ['Menos de $400/mes', 'Entre $400-$600/mes', 'Más de $600/mes'];
-  if (r.includes('test drive') || r.includes('visitar') || r.includes('venir')) return ['Sí, quiero ir', 'Prefiero que me llamen', 'Esta semana'];
-  if (r.includes('número') || r.includes('llamar') || r.includes('fotos')) return ['Sí, aquí está mi número', 'Prefiero WhatsApp'];
-  if (r.includes('trade') || r.includes('cambio')) return ['Sí tengo vehículo para cambio', 'No, no tengo trade-in'];
-  if (r.includes('crédito') || r.includes('financi')) return ['Necesito financiamiento', 'Pago en efectivo', '¿Califico?'];
+  if (r.includes('tipo de carro') || r.includes('qué carro') || r.includes('que carro'))
+    return ['SUV familiar', 'Sedán económico', 'Pickup truck', 'Lo que haya económico'];
+  if (r.includes('llama la atención') || r.includes('interesa') || r.includes('siguiente'))
+    return ['Me gusta el primero', 'Me gusta el segundo', 'Me gusta el tercero', 'Ver otros'];
+  if (r.includes('gusto') || r.includes('nombre'))
+    return [];
+  if (r.includes('trade') || r.includes('cambio') || r.includes('vehículo para'))
+    return ['Sí tengo para cambio', 'No tengo trade-in'];
+  if (r.includes('financia') || r.includes('efectivo') || r.includes('préstamo'))
+    return ['Necesito financiamiento', 'Pago en efectivo'];
+  if (r.includes('permiso') || r.includes('whatsapp') || r.includes('fotos'))
+    return ['Sí, me puedes contactar', 'Prefiero solo aquí'];
+  if (r.includes('test drive') || r.includes('visitar') || r.includes('venir'))
+    return ['Sí quiero ir', 'Esta semana', 'Prefiero llamada'];
+  if (r.includes('montas') || r.includes('cuadran') || r.includes('número'))
+    return ['Sí, me monto', 'Necesito pensarlo', 'Dame más info'];
+  if (r.includes('pago') || r.includes('mensual'))
+    return ['Menos de $400/mes', 'Entre $400-$600/mes', 'Más de $600/mes'];
   return [];
 }
 
@@ -182,7 +196,6 @@ async function sendMessage() {
   try {
     let reply = await callClaude(history);
 
-    // Detectar lead con 5 campos — incluye notas
     const leadMatch = reply.match(/CITA_CONFIRMADA:([^|]+)\|([^|]+)\|([^|]+)\|([^|]+)\|(.+)/);
     if (leadMatch && !leadCaptured) {
       leadCaptured = true;
@@ -209,11 +222,11 @@ document.getElementById('userInput').addEventListener('keydown', e => {
 
 window.onload = async () => {
   showTyping();
-  await new Promise(r => setTimeout(r, 1000));
+  await new Promise(r => setTimeout(r, 900));
   removeTyping();
-  const greeting = `¡Bienvenido a Auto Éxito Import! 🚗\nSoy Éxito, tu asesor virtual. Estoy aquí para ayudarte a encontrar tu próximo carro.\n\n¿Con quién tengo el gusto?`;
+  const greeting = `¡Bienvenido a Auto Éxito Import! 🚗\n\n¿Qué tipo de carro estás buscando?`;
   history.push({ role: 'assistant', content: greeting });
-  addMessage('bot', greeting);
+  addMessage('bot', greeting, ['SUV familiar', 'Sedán económico', 'Pickup truck', 'Lo que haya económico']);
 };
 </script>
 </body>
